@@ -1,0 +1,124 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run `zed: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+    "drag_and_drop_selection": {
+        "delay": 100,
+        "enabled": true,
+    },
+    "session": {
+        "restore_unsaved_buffers": true,
+    },
+    "use_system_window_tabs": true,
+    "tabs": {
+        "show_close_button": "hidden",
+        "show_diagnostics": "all",
+        "close_position": "left",
+        "file_icons": true,
+        "git_status": false,
+    },
+    "tab_bar": {
+        "show_pinned_tabs_in_separate_row": false,
+        "show_nav_history_buttons": true,
+        "show": true,
+    },
+    "title_bar": {
+        "button_layout": "platform_default",
+        "show_menus": false,
+        "show_user_picture": true,
+        "show_sign_in": true,
+        "show_onboarding_banner": true,
+        "show_project_items": true,
+        "show_worktree_name": false,
+        "show_branch_status_icon": true,
+    },
+    "terminal": {
+        "button": true,
+    },
+    "status_bar": {
+        "show_active_file": false,
+        "line_endings_button": true,
+        "active_encoding_button": "enabled",
+        "active_language_button": true,
+    },
+    "use_smartcase_search": false,
+    "toolbar": {
+        "code_actions": true,
+        "selections_menu": true,
+        "quick_actions": true,
+        "breadcrumbs": true,
+    },
+    "tab_size": 4,
+    "preferred_line_length": 140,
+    "indent_guides": {
+        "active_line_width": 1,
+        "line_width": 1,
+        "coloring": "indent_aware",
+        "background_coloring": "disabled",
+    },
+    "format_on_save": "modifications_if_available",
+    "line_ending": "prefer_lf",
+    "inlay_hints": {
+        "show_type_hints": true,
+        "show_value_hints": true,
+        "enabled": true,
+        "show_background": true,
+    },
+    "tasks": {
+        "enabled": true,
+    },
+    "code_lens": "on",
+    "middle_click_paste": false,
+    "colorize_brackets": true,
+
+    "scrollbar": {
+        "show": "system",
+    },
+    "restore_on_startup": "last_session",
+    "project_panel": {
+        "hide_root": true,
+        "git_status_indicator": false,
+        "diagnostic_badges": true,
+        "scrollbar": {
+            "show": "system",
+        },
+        "bold_folder_labels": true,
+        "indent_size": 18.0,
+        "entry_spacing": "comfortable",
+        "button": true,
+        "dock": "left",
+    },
+    "scroll_beyond_last_line": "one_page",
+    "which_key": {
+        "enabled": true,
+    },
+    "autosave": "on_focus_change",
+    "ui_font_family": ".SystemUIFont",
+    "buffer_font_family": "JetBrainsMono Nerd Font",
+    "on_last_window_closed": "quit_app",
+    "when_closing_with_no_tabs": "close_window",
+    "cli_default_open_behavior": "new_window",
+    "agent_servers": {
+        "codex-acp": {
+            "type": "registry",
+        },
+    },
+    "icon_theme": {
+        "mode": "system",
+        "light": "Zed (Default)",
+        "dark": "Zed (Default)",
+    },
+    "base_keymap": "JetBrains",
+    "ui_font_size": 15.0,
+    "buffer_font_size": 12.0,
+    "theme": {
+        "mode": "system",
+        "light": "One Light",
+        "dark": "Material Theme Darker",
+    },
+}

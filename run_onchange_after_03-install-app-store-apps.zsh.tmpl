@@ -1,0 +1,78 @@
+#!/usr/bin/env zsh
+{{ if eq .chezmoi.os "darwin" }}
+
+set -euo pipefail
+source {{ joinPath .chezmoi.sourceDir "assets/scripts/helpers.zsh" | quote }}
+
+step "Install Mac App Store apps"
+
+export MAS_NO_AUTO_INDEX=1
+
+# Keep mas only when it was already installed before this script ran.
+integer installed_mas_for_setup=0
+cleanup_mas() {
+  local exit_status=$?
+  if (( installed_mas_for_setup )); then
+    brew uninstall mas || warning "Could not remove the temporary mas CLI"
+  fi
+  return "$exit_status"
+}
+trap cleanup_mas EXIT
+
+if ! command -v mas >/dev/null 2>&1; then
+  brew install mas
+  installed_mas_for_setup=1
+fi
+
+# mas install accepts apps already acquired with the signed-in Apple Account.
+typeset -a apps=(
+  '937984704|Amphetamine'
+  '1381004916|Discovery'
+  '935235287|Encrypto'
+  '1153157709|Speedtest'
+  '425424353|The Unarchiver'
+  '1363637349|Unread'
+  '1295203466|Windows App'
+  '497799835|Xcode'
+{{- if eq .profile "macos-work" }}
+  '1545870783|Color Picker'
+  '6454431289|CrystalFetch'
+  '462058435|Microsoft Excel'
+  '985367838|Microsoft Outlook'
+  '462062816|Microsoft PowerPoint'
+  '462054704|Microsoft Word'
+  '823766827|OneDrive'
+  '693112260|Sim Daltonism'
+{{- end }}
+)
+
+typeset -A installed_apps
+installed_list="$(mas list)"
+while read -r installed_id remainder; do
+  if [[ "$installed_id" =~ '^[0-9]+$' ]]; then
+    installed_apps[$installed_id]=1
+  fi
+done <<< "$installed_list"
+
+integer failures=0
+for entry in "${apps[@]}"; do
+  app_id="${entry%%|*}"
+  app_name="${entry#*|}"
+
+  if (( ${+installed_apps[$app_id]} )); then
+    info "$app_name is already installed"
+  elif mas install "$app_id"; then
+    success "Installed $app_name"
+  else
+    warning "Could not install $app_name ($app_id)"
+    (( ++failures ))
+  fi
+done
+
+if (( failures )); then
+  print -u2 "$failures Mac App Store app(s) could not be installed."
+  exit 1
+fi
+
+success "Mac App Store apps are installed"
+{{ end }}

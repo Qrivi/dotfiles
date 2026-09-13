@@ -1,0 +1,29 @@
+#!/usr/bin/env zsh
+{{ if eq .chezmoi.os "darwin" }}
+
+set -euo pipefail
+source {{ joinPath .chezmoi.sourceDir "assets/scripts/helpers.zsh" | quote }}
+
+step "Set macOS system defaults"
+
+# Login-screen language and machine-wide region
+sudo defaults write /Library/Preferences/.GlobalPreferences AppleLanguages -array en-US # Use English on the login screen and for system processes.
+sudo defaults write /Library/Preferences/.GlobalPreferences AppleLocale -string 'en_US@rg=bezzzz' # Use Belgium as the machine-wide region.
+sudo defaults write /Library/Preferences/.GlobalPreferences Country -string BE # Set Belgium as the machine-wide country.
+
+# Display sleep on battery and power adapter
+sudo pmset -b displaysleep 10
+sudo pmset -c displaysleep 90
+sudo defaults write /Library/Preferences/.GlobalPreferences com.apple.coremedia.optimizeVideoStreamingOnBattery -bool false # Do not reduce streaming-video quality while on battery.
+
+# Login window
+sudo defaults write /Library/Preferences/com.apple.loginwindow GuestEnabled -bool false # Disable the Guest User account.
+sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText -string hello@kristofdewil.de # Show contact information on the Lock Screen.
+
+# Software updates
+sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true # Check automatically for available macOS updates.
+sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticDownload -bool false # Do not download macOS updates automatically.
+sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate CriticalUpdateInstall -bool true # Install critical updates and security responses automatically.
+
+success "Done"
+{{ end }}

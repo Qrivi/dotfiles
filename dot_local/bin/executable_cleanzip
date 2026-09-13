@@ -1,0 +1,23 @@
+#!/usr/bin/env zsh
+
+set -e
+
+if [[ -z "$1" ]]; then
+  print -u2 'Usage: cleanzip <archive.zip>'
+  exit 1
+fi
+
+archive="$1"
+
+if [[ ! -f "$archive" ]]; then
+  print -u2 "Error: File not found: $archive"
+  exit 1
+fi
+
+print "Removing macOS metadata from: $archive"
+
+zip -d "$archive" '__MACOSX/*' '*/.DS_Store' 2>/dev/null || true
+
+print
+print "Contents:"
+unzip -l "$archive"

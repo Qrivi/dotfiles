@@ -1,0 +1,15 @@
+#!/usr/bin/env zsh
+
+if [[ -z "$1" ]]; then
+  echo "Usage: countdown <seconds>" >&2
+  exit 1
+fi
+
+secs=$(($1 * 1))
+echo "⚠️  Ctrl+C now if this was a mistake"
+while [ $secs -gt 0 ]; do
+  echo -ne "   $secs seconds left to abort...\033[0K\r"
+  sleep 1
+  : $((secs--))
+done
+printf "\n   Time's up! \n\n"

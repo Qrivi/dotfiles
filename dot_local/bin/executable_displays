@@ -1,0 +1,107 @@
+#!/usr/bin/env zsh
+
+BUILTIN="Built-in Display"
+
+if [[ -x "/Applications/BetterDisplay.app/Contents/MacOS/BetterDisplay" ]]; then
+  BD="/Applications/BetterDisplay.app/Contents/MacOS/BetterDisplay"
+elif [[ -x "$HOME/Applications/BetterDisplay.app/Contents/MacOS/BetterDisplay" ]]; then
+  BD="$HOME/Applications/BetterDisplay.app/Contents/MacOS/BetterDisplay"
+else
+  print -u2 "Error: BetterDisplay is not installed."
+  exit 1
+fi
+
+
+# Outputs external physical displays as:
+#   <tagID><TAB><display name>
+#
+# BetterDisplay's identifier output is JSON-like rather than convenient
+# line-oriented output, so we collect the fields for each display object.
+external_displays() {
+  local type name tag line
+  local output
+
+  # Capture first so BetterDisplay's exit status isn't lost in a
+  # process substitution.
+  if ! output=$("$BD" get -identifiers); then
+    print -u2 "Error: Failed to get display identifiers from BetterDisplay."
+    return 1
+  fi
+
+  while IFS= read -r line; do
+    if [[ "$line" =~ '"deviceType"[[:space:]]*:[[:space:]]*"([^"]+)"' ]]; then
+      type="$match[1]"
+    elif [[ "$line" =~ '"name"[[:space:]]*:[[:space:]]*"([^"]+)"' ]]; then
+      name="$match[1]"
+    elif [[ "$line" =~ '"tagID"[[:space:]]*:[[:space:]]*"([^"]+)"' ]]; then
+      tag="$match[1]"
+    fi
+
+    if [[ "$line" == '},{' || "$line" == '}' ]]; then
+      if [[ "$type" == "Display" && "$name" != "$BUILTIN" && -n "$tag" ]]; then
+        print -r -- "$tag"$'\t'"$name"
+      fi
+
+      type=""
+      name=""
+      tag=""
+    fi
+  done <<< "$output"
+}
+
+
+disconnect_displays() {
+  local tag name
+  local found=false
+  local failed=false
+  local displays
+
+  if ! displays=$(external_displays); then
+    return 1
+  fi
+
+  while IFS=$'\t' read -r tag name; do
+    [[ -z "$tag" ]] && continue
+
+    found=true
+    print "Disconnecting $name..."
+
+    # Keep processing the remaining displays if one disconnect fails.
+    if ! "$BD" set -tagID="$tag" -connected=off; then
+      print -u2 "Error: Failed to disconnect $name."
+      failed=true
+    fi
+  done <<< "$displays"
+
+  if [[ "$found" == false ]]; then
+    print "No external displays connected."
+  fi
+
+  [[ "$failed" == false ]]
+}
+
+
+connect_displays() {
+  print "Connecting all displays..."
+
+  if ! "$BD" perform -connectAllDisplays; then
+    print -u2 "Error: Failed to connect all displays."
+    return 1
+  fi
+}
+
+
+case "${1:-}" in
+  connect)
+    connect_displays || exit 1
+    ;;
+
+  disconnect)
+    disconnect_displays || exit 1
+    ;;
+
+  *)
+    print -u2 "Usage: displays {connect|disconnect}"
+    exit 1
+    ;;
+esac

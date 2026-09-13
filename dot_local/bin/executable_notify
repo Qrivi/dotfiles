@@ -1,0 +1,29 @@
+#!/usr/bin/env zsh
+
+set -e
+
+title="Terminal"
+message="Hello World"
+sound="bell" # maps on macOS and Linux
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -t|--title) title="$2"; shift 2 ;;
+    -m|--message) message="$2"; shift 2 ;;
+    -s|--sound) sound="$2"; shift 2 ;;
+    *) echo "Unknown option: $1" >&2; exit 1 ;;
+  esac
+done
+
+if [[ "$OSTYPE" == darwin* ]]; then
+  cmd=(alerter --title "$title" --message "$message" --timeout 10)
+  [[ -n "$sound" ]] && cmd+=(--sound "$sound")
+elif [[ "$OSTYPE" == linux* ]]; then
+  cmd=(notify-send "$title" "$message")
+  [[ -n "$sound" ]] && cmd+=(-h "string:sound-name:$sound")
+else
+  echo "Error: Unsupported operating system: $system" >&2
+  exit 1
+fi
+
+"${cmd[@]}" >/dev/null 2>&1 &! # can be removed once we have https://github.com/vjeantet/alerter/pull/76

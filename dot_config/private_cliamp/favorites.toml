@@ -1,0 +1,11 @@
+[[entry]]
+favorited_at = "2026-09-07T21:28:33Z"
+path = "http://icecast.vrtcdn.be/stubru-high.mp3"
+title = "Studio Brussel · Belgium"
+realtime = true
+
+[[entry]]
+favorited_at = "2026-09-07T21:28:15Z"
+path = "http://icecast.vrtcdn.be/radio1-high.mp3"
+title = "VRT Radio 1 · Belgium"
+realtime = true

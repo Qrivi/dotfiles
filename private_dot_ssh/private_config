@@ -1,0 +1,62 @@
+# Ignore Apple's UseKeychain option on non-Apple OpenSSH builds.
+IgnoreUnknown UseKeychain
+
+Include ~/.colima/ssh_config
+Include ~/.orbstack/ssh/config
+
+# ----------------------------------------- #
+# Personal
+# ----------------------------------------- #
+
+Host server.qrivi.dev
+    HostName server.qrivi.dev
+    User qrivi
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+
+Host nas
+    HostName truenas.local.qrivi.dev
+    User truenas_admin
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+
+Host srgnas
+    HostName dewilde.diskstation.me
+    User qrivi
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+
+# ----------------------------------------- #
+# Work
+# ----------------------------------------- #
+
+Host kubik-production
+    HostName 142.132.167.243
+    User kubik
+    IdentityFile ~/.ssh/id-kubik_rsa
+    IdentitiesOnly yes
+
+# ----------------------------------------- #
+# Programming
+# ----------------------------------------- #
+
+Host github.com
+    HostName ssh.github.com
+    # Port 443
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+
+Host bitbucket.org
+    HostName bitbucket.org
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+
+# ----------------------------------------- #
+# Defaults
+# ----------------------------------------- #
+
+Host *
+    AddKeysToAgent yes
+    UseKeychain yes

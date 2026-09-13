@@ -1,0 +1,38 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+source {{ joinPath .chezmoi.sourceDir "assets/scripts/helpers.zsh" | quote }}
+
+step "Prepare system"
+
+# Directories my zsh config writes to but does not create if missing
+mkdir -p "$HOME/.cache/zsh" "$HOME/.local/state/zsh" "$HOME/.local/share" "$HOME/.local/bin"
+
+{{ if eq .chezmoi.os "darwin" }}
+# A sound file with no sound (used in eg BTT where you must specify a sound file for notifications)
+mkdir -p "$HOME/Library/Sounds"
+[[ -e "$HOME/Library/Sounds/Silent.aiff" ]] || touch "$HOME/Library/Sounds/Silent.aiff"
+
+{{ end }}
+
+success "Done"
+
+{{ if eq .chezmoi.os "darwin" }}
+
+step "Allow apps from anywhere"
+
+sudo spctl --master-disable
+
+step "Enable TouchID for sudo"
+
+readonly PAM_TOUCHID_RULE='auth       sufficient     pam_tid.so'
+readonly SUDO_LOCAL='/etc/pam.d/sudo_local'
+
+if sudo grep -Fqx "$PAM_TOUCHID_RULE" "$SUDO_LOCAL" 2>/dev/null; then
+  success "TouchID for sudo is already enabled"
+else
+  printf '%s\n' "$PAM_TOUCHID_RULE" | sudo tee -a "$SUDO_LOCAL" >/dev/null
+  success "TouchID for sudo is now enabled"
+fi
+
+{{ end }}

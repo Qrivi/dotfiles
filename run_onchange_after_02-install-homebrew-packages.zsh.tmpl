@@ -1,0 +1,138 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+source {{ joinPath .chezmoi.sourceDir "assets/scripts/helpers.zsh" | quote }}
+
+step "Install Homebrew packages"
+
+# Install formulae
+brew bundle --file=/dev/stdin <<EOF
+cask "font-jetbrains-mono-nerd-font"
+
+{{- if eq .chezmoi.os "darwin" }}
+brew "dockutil"
+brew "mactop"
+
+brew "nano"
+brew "nmap"
+brew "coreutils"
+{{- else if eq .chezmoi.os "linux" }}
+brew "btop"
+{{- end }}
+
+# Terminal enhancements
+brew "atuin", restart_service: :changed
+brew "age"
+brew "bat"
+brew "chezmoi"
+brew "eza"
+brew "fd"
+brew "fzf"
+brew "herdr", restart_service: :changed
+brew "jq"
+brew "quien"
+brew "ripgrep"
+brew "rsync"
+brew "rtk"
+brew "starship"
+brew "thefuck"
+brew "tlrc"
+brew "wget"
+brew "yazi"
+brew "zoxide"
+brew "nikolaeu/numi/numi-cli", trusted: true
+brew "qrivi/tap/audioctl", trusted: true
+
+# Programming
+brew "gh"
+brew "git-filter-repo"
+brew "glab"
+brew "lazydocker"
+brew "pi-coding-agent"
+brew "pnpm"
+brew "anomalyco/tap/opencode", trusted: true
+brew "oven-sh/bun/bun", trusted: true
+brew "sdkman/tap/sdkman-cli", trusted: true
+
+# Hacker tools
+brew "asciiquarium"
+brew "cmatrix"
+brew "fastfetch"
+brew "lolcat"
+brew "sl"
+brew "vitetris"
+brew "bjarneo/cliamp/cliamp", trusted: true
+
+{{ if eq .profile "macos-work" }}
+brew "act"
+brew "cocoapods"
+brew "awscli"
+brew "azure-cli"
+brew "deno"
+brew "ffmpeg"
+brew "go"
+brew "iperf3"
+brew "ollama"
+brew "opentofu"
+brew "powershell"
+brew "rust"
+{{ end }}
+EOF
+
+{{ if eq .chezmoi.os "darwin" }}
+# Install casks
+brew bundle --file=/dev/stdin <<EOF
+cask "altserver"
+cask "arc"
+cask "beeper"
+cask "betterdisplay"
+cask "bettertouchtool"
+cask "burp-suite"
+cask "pakerwreah/calendr/calendr"
+cask "chatgpt"
+cask "codeforreal1/tap/compresso"
+cask "qrivi/tap/codexmeter"
+cask "fork"
+cask "ghostty"
+cask "google-chrome"
+cask "google-gemini"
+cask "gpg-suite"
+cask "iina"
+cask "intellij-idea"
+cask "microsoft-teams"
+cask "netnewswire"
+cask "ngrok"
+cask "notion"
+cask "numi"
+cask "opencode-desktop"
+cask "orbstack"
+cask "postman"
+cask "jithin-sabu/tap/purge"
+cask "retroarch"
+cask "spotify"
+cask "nahive/spotify-notify/spotify-notify"
+cask "thaw"
+cask "thelowtechguys-cling"
+cask "flewgg/tap/unfold"
+cask "utm"
+cask "vesktop"
+cask "vorssaint"
+cask "whatcable"
+cask "yaak"
+cask "zed"
+cask "zen"
+
+{{ if eq .profile "macos-work" }}
+cask "claude"
+cask "epic-games"
+cask "figma"
+cask "flutter"
+cask "handbrake-app"
+cask "iloader"
+cask "jdownloader"
+cask "macusb"
+cask "steam"
+cask "typewhisper/tap/typewhisper", trusted: true
+{{ end }}
+EOF
+{{ end }}

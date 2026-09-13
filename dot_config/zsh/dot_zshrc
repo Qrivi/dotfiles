@@ -1,0 +1,110 @@
+# ~/.config/zsh/.zshrc
+
+# --- Shell ---
+autoload -Uz compinit
+compinit -d "$XDG_CACHE_HOME/zsh/zcompdump" # Autoload completions
+zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/zcompcache"
+zstyle ':completion:*' menu select # interactive
+# case-insensitive, hyphen/underscore-insensitive, substring matching
+zstyle ':completion:*' matcher-list \
+  'm:{a-zA-Z}={A-Za-z}' \
+  'm:{-_}={_-}' \
+  'l:|=* r:|=*'
+
+setopt AUTOCD              # automatically cd into a directory by typing its name
+setopt NUMERIC_GLOB_SORT   # sort file1, file2, file10 in natural order
+setopt EXTENDED_GLOB       # enable advanced pattern matching (#, ~, ^)
+
+# export SUDO_EDITOR="zed"
+# export EDITOR="zed"
+# export VISUAL="zed"
+
+# --- History ---
+HISTFILE="$XDG_STATE_HOME/zsh/history"
+HISTSIZE=100000
+SAVEHIST=100000
+
+setopt EXTENDED_HISTORY # add timestamps (duration won't work because of APPEND_HISTORY and SHARE_HISTORY)
+setopt APPEND_HISTORY # append new lines instead of overwriting the history file
+setopt SHARE_HISTORY # share history between all sessions/tabs
+setopt HIST_IGNORE_DUPS # ignore sequential duplicate entries in the history
+setopt HIST_IGNORE_SPACE # ignore commands that start with a space
+setopt HIST_EXPIRE_DUPS_FIRST # remove older duplicate entries first when trimming history
+setopt HIST_FIND_NO_DUPS # do not display a previously found command in the history search
+
+# --- GPG ---
+export GPG_TTY=$(tty)
+
+# --- man ---
+if command -v bat >/dev/null 2>&1; then # macOS
+  export MANPAGER="bat -l man -p"
+elif command -v batcat >/dev/null 2>&1; then # Ubuntu
+  export MANPAGER="batcat -l man -p"
+fi
+
+# --- Specific config ---
+
+source "$ZDOTDIR/aliases.zsh"
+source "$ZDOTDIR/fzf.zsh"
+source "$ZDOTDIR/prompt.zsh"
+
+source "$ZDOTDIR/plugins.zsh"
+source "$ZDOTDIR/bindings.zsh"
+
+# --- yazi file manager ---
+
+y() {
+  # `q` quit and change CWD to Yazi's current directory, `Q` to quit without changing
+  local tmp cwd
+  tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+
+  command yazi "$@" --cwd-file="$tmp"
+
+  IFS= read -r -d '' cwd < "$tmp"
+  [[ "$cwd" != "$PWD" && -d "$cwd" ]] && builtin cd -- "$cwd"
+
+  command rm -f -- "$tmp"
+}
+
+# --- SDKMAN! ---
+
+export SDKMAN_DIR="$HOMEBREW_PREFIX/opt/sdkman-cli/libexec"
+[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && \
+  source "$SDKMAN_DIR/bin/sdkman-init.sh"
+
+# --- Go ---
+
+export GOPATH="$HOME/.go"
+export GOBIN="$GOPATH/bin"
+export PATH="$GOBIN:$PATH"
+
+# --- Dart / Pub ---
+
+export PUB_CACHE="$HOME/.pub-cache"
+export PATH="$PUB_CACHE/bin:$PATH"
+
+# --- pnpm ---
+
+export PNPM_HOME="$HOME/.pnpm"
+export PATH="$PNPM_HOME/bin:$PATH"
+
+# --- IntelliJ ---
+
+if [[ "$OSTYPE" == darwin* ]]; then
+  export PATH="/Applications/IntelliJ IDEA.app/Contents/MacOS:$PATH" # idea cli
+
+  export ANDROID_SDK_ROOT="$HOME/Library/Android/sdk"
+  export PATH="$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/tools:$PATH"
+
+  export PATH="/Applications/IntelliJ IDEA.app/Contents/plugins/maven/lib/maven3/bin:$PATH"
+
+elif [[ "$OSTYPE" == linux* ]]; then
+  export PATH="/opt/intellij-idea/bin:$PATH"
+fi
+
+# --- Herdr ---
+
+# if [[ -z "$HERDR_ENV" ]] && command -v herdr &>/dev/null; then
+#   # exec herdr # replace zsh process
+#   herdr
+# fi

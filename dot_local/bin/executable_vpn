@@ -1,0 +1,36 @@
+#!/usr/bin/env zsh
+
+set -e
+
+if [[ "$OSTYPE" != darwin* ]]; then
+  print -u2 "Error: vpn only supports macOS."
+  exit 1
+fi
+
+if (( $# == 0 )); then
+  print -u2 'Usage: vpn <name>'
+  exit 1
+fi
+
+vpn_name="$* VPN"
+
+if ! scutil --nc list | grep -Fq "$vpn_name"; then
+  print -u2 "Error: VPN not configured: $vpn_name"
+  exit 1
+fi
+
+old_status="$(networksetup -showpppoestatus "$vpn_name")"
+
+if [[ "$old_status" == *disconnected* ]]; then
+  print "$vpn_name: connecting..."
+  networksetup -connectpppoeservice "$vpn_name"
+  sleep 4
+else
+  print "$vpn_name: disconnecting..."
+  networksetup -disconnectpppoeservice "$vpn_name"
+  sleep 1
+fi
+
+new_status="$(networksetup -showpppoestatus "$vpn_name")"
+
+print "$vpn_name: $old_status → $new_status"

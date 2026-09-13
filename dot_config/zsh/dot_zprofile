@@ -1,0 +1,34 @@
+# ~/.config/zsh/.zprofile
+
+# --- Homebrew ---
+
+[[ -x "$HOMEBREW_PREFIX/bin/brew" ]] && \
+  eval "$("$HOMEBREW_PREFIX/bin/brew" shellenv)"
+
+# --- OrbStack ---
+
+[[ -f "$HOME/.orbstack/shell/init.zsh" ]] && \
+  source "$HOME/.orbstack/shell/init.zsh"
+
+# --- Ruby ---
+
+RUBY_DIR="$HOMEBREW_PREFIX/opt/ruby"
+[[ -x "$RUBY_DIR/bin/ruby" ]] && \
+  export PATH="$RUBY_DIR/bin:$PATH"
+
+
+# These symlinks below are now restored/created by Chezmoi
+
+# if [[ "$OSTYPE" == darwin* ]]; then
+#     # --- Codex ---
+
+#     if [[ ! -e ~/.local/bin/codex && ! -L ~/.local/bin/codex ]]; then
+#         ln -s /Applications/ChatGPT.app/Contents/Resources/codex ~/.local/bin/codex
+#     fi
+
+#     # --- BetterTouchTool ---
+
+#     if [[ ! -e ~/.local/bin/bttcli && ! -L ~/.local/bin/bttcli ]]; then
+#         ln -s /Applications/BetterTouchTool.app/Contents/SharedSupport/bin/bttcli ~/.local/bin/bttcli
+#     fi
+# fi

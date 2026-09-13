@@ -1,0 +1,48 @@
+#!/usr/bin/env zsh
+{{ if eq .chezmoi.os "darwin" }}
+
+set -euo pipefail
+source {{ joinPath .chezmoi.sourceDir "assets/scripts/helpers.zsh" | quote }}
+
+step "Set macOS device defaults"
+
+# Apply the same gestures to built-in and Bluetooth trackpads.
+for trackpad_domain in \
+  com.apple.AppleMultitouchTrackpad \
+  com.apple.driver.AppleBluetoothMultitouch.trackpad
+do
+  defaults write "$trackpad_domain" Clicking -bool false # Require a physical click instead of tap-to-click.
+  defaults write "$trackpad_domain" TrackpadRightClick -bool true # Use a two-finger click as secondary click.
+  defaults write "$trackpad_domain" TrackpadThreeFingerDrag -bool true # Drag windows and items with three fingers.
+  defaults write "$trackpad_domain" TrackpadThreeFingerHorizSwipeGesture -int 0 # Reserve horizontal three-finger gestures for dragging.
+  defaults write "$trackpad_domain" TrackpadThreeFingerVertSwipeGesture -int 0 # Reserve vertical three-finger gestures for dragging.
+  defaults write "$trackpad_domain" TrackpadFourFingerHorizSwipeGesture -int 2 # Swipe between desktops and full-screen apps with four fingers.
+  defaults write "$trackpad_domain" TrackpadFourFingerVertSwipeGesture -int 2 # Use four-finger vertical swipes for Mission Control and App Exposé.
+  defaults write "$trackpad_domain" TrackpadFourFingerPinchGesture -int 2 # Pinch with four fingers to show Launchpad.
+  defaults write "$trackpad_domain" TrackpadFiveFingerPinchGesture -int 2 # Pinch with five fingers to show Launchpad.
+  defaults write "$trackpad_domain" TrackpadPinch -bool true # Enable pinch-to-zoom.
+  defaults write "$trackpad_domain" TrackpadRotate -bool true # Enable two-finger rotation.
+  defaults write "$trackpad_domain" TrackpadTwoFingerDoubleTapGesture -int 1 # Enable two-finger Smart Zoom.
+  defaults write "$trackpad_domain" TrackpadTwoFingerFromRightEdgeSwipeGesture -int 3 # Swipe from the right edge to show Notification Center.
+done
+
+# Apply the same gestures to Magic Mouse preference domains.
+for mouse_domain in \
+  com.apple.AppleMultitouchMouse \
+  com.apple.driver.AppleBluetoothMultitouch.mouse
+do
+  defaults write "$mouse_domain" MouseButtonMode -string TwoButton # Enable left and right clicking.
+  defaults write "$mouse_domain" MouseHorizontalScroll -bool true # Enable horizontal scrolling.
+  defaults write "$mouse_domain" MouseMomentumScroll -bool true # Keep scrolling with momentum after a swipe.
+  defaults write "$mouse_domain" MouseOneFingerDoubleTapGesture -int 1 # Enable one-finger Smart Zoom.
+  defaults write "$mouse_domain" MouseTwoFingerDoubleTapGesture -int 3 # Open Mission Control with a two-finger double tap.
+  defaults write "$mouse_domain" MouseTwoFingerHorizSwipeGesture -int 2 # Swipe between desktops and full-screen apps with two fingers.
+  defaults write "$mouse_domain" MouseVerticalScroll -bool true # Enable vertical scrolling.
+done
+
+# These screen-saver preferences are specific to this Mac.
+defaults -currentHost write com.apple.screensaver idleTime -int 300 # Start the screen saver after five minutes of inactivity.
+defaults -currentHost write com.apple.screensaver showClock -bool true # Show the large clock on the screen saver and Lock Screen.
+
+success "Done"
+{{ end }}

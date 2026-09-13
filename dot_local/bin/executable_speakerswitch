@@ -1,0 +1,32 @@
+#!/usr/bin/env zsh
+
+STATUS=$1
+
+# 1. Check if the current default output is already AirPods
+CURRENT_OUTPUT=$(audioctl default get output --json | jq -r '.device.name // empty')
+if [[ "$CURRENT_OUTPUT" =~ "AirPods" ]]; then
+    echo "AirPods currently active ($CURRENT_OUTPUT). No action taken."
+    exit 0
+fi
+
+# 2. Determine target device based on status
+case "$STATUS" in
+    connected)
+        TARGET="Logi Z207"
+        ;;
+    disconnected)
+        TARGET="MacBook Pro Speakers"
+        ;;
+    *)
+        echo "Usage: monitor-audio {connected|disconnected}"
+        exit 1
+        ;;
+esac
+
+# 3. Switch audio device instantly
+if audioctl default set output "$TARGET" --quiet; then
+    echo "Audio output switched to $TARGET"
+else
+    echo "Error: Failed to set audio output to $TARGET" >&2
+    exit 1
+fi

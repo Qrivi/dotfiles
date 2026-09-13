@@ -1,0 +1,66 @@
+[user]
+    email = code@qrivi.dev
+    name = Kristof Dewilde
+    signingkey = 9E93E4262371952E
+
+[help]
+    autocorrect = prompt
+[core]
+    autocrlf = input
+    ignoreCase = false
+    compression = 9
+    excludesfile = ~/.config/git/ignore
+    whitespace = error
+    preloadindex = true
+[init]
+    defaultBranch = develop
+    templateDir = ~/.config/git/templates
+[fetch]
+    prune = true
+    pruneTags = true
+[pull]
+    default = current
+    rebase = true
+[push]
+    autoSetupRemote = true
+    default = current
+    followTags = true
+[rebase]
+    autoStash = true
+[commit]
+    gpgsign = true
+	# template = ~/.config/git/templates
+[branch]
+    sort = -committerdate
+[tag]
+    sort = -taggerdate
+    gpgsign = true
+[gpg]
+    program = gpg
+[log]
+    abbrevCommit = true
+    graphColors = blue,yellow,cyan,magenta,green,red
+[color "decorate"]
+    HEAD = red
+    branch = blue
+    tag = yellow
+    remoteBranch = magenta
+[color "branch"]
+    current = magenta
+    local = default
+    remote = yellow
+    upstream = green
+    plain = blue
+[status]
+    branch = true
+    showUntrackedFiles = all
+    showStash = true
+[url "git@github.com:"]
+    insteadOf = "gh:"
+
+[alias]
+    forcepull = !git fetch origin && git reset --hard @{u}
+    current = rev-parse --abbrev-ref HEAD
+
+[includeIf "gitdir/i:~/Developer/Intermut/**"]
+    path = ~/.config/git/config-intermut

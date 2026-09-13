@@ -1,0 +1,13 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+umask 077
+
+readonly AGE_IDENTITY="$HOME/.config/chezmoi/key.txt"
+readonly ENCRYPTED_AGE_IDENTITY={{ joinPath .chezmoi.sourceDir "key.txt.age" | quote }}
+
+if [[ ! -s "$AGE_IDENTITY" ]]; then
+  mkdir -p "${AGE_IDENTITY:h}"
+  chezmoi age decrypt --passphrase --output "$AGE_IDENTITY" "$ENCRYPTED_AGE_IDENTITY"
+  chmod 600 "$AGE_IDENTITY"
+fi

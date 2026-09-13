@@ -1,0 +1,31 @@
+#!/usr/bin/env zsh
+
+# Embedding these checksums makes chezmoi rerun this run_onchange script
+# whenever either encrypted backup changes.
+# Secret keys: {{ include "assets/gnupg/secret-keys.asc.age" | sha256sum }}
+# Owner trust: {{ include "assets/gnupg/ownertrust.txt.age" | sha256sum }}
+
+set -euo pipefail
+source {{ joinPath .chezmoi.sourceDir "assets/scripts/helpers.zsh" | quote }}
+
+step "Import GnuPG keys and owner trust"
+
+# Decrypt directly into GnuPG. No plaintext export is written to disk.
+chezmoi decrypt {{ joinPath .chezmoi.sourceDir "assets/gnupg/secret-keys.asc.age" | quote }} \
+  | gpg --batch --import
+chezmoi decrypt {{ joinPath .chezmoi.sourceDir "assets/gnupg/ownertrust.txt.age" | quote }} \
+  | gpg --batch --import-ownertrust
+
+# Reload gpg-agent so the managed configuration is picked up immediately.
+gpgconf_bin="$(command -v gpgconf || true)"
+if [[ -z "$gpgconf_bin" && -x /usr/local/MacGPG2/bin/gpgconf ]]; then
+  gpgconf_bin=/usr/local/MacGPG2/bin/gpgconf
+fi
+
+if [[ -n "$gpgconf_bin" ]]; then
+  "$gpgconf_bin" --kill gpg-agent || warning "Could not reload gpg-agent"
+else
+  warning "gpgconf is unavailable; gpg-agent will load the configuration on its next restart"
+fi
+
+success "GnuPG keys and owner trust imported"

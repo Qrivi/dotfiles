@@ -1,0 +1,9 @@
+pr create: mr create
+pr list: mr list
+pr view: mr view
+pr checkout: mr checkout
+pr merge: mr merge
+pr close: mr close
+pr diff: mr diff
+pr approve: mr approve
+pr: mr

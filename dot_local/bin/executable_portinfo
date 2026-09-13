@@ -1,0 +1,45 @@
+#!/usr/bin/env zsh
+
+set -e
+
+if [[ -z "$1" ]]; then
+  print -u2 'Usage: portinfo <port> [stop|kill]'
+  exit 1
+fi
+
+port="$1"
+action="${2:-info}"
+
+if [[ "$port" != <-> ]]; then
+  print -u2 "Error: Invalid port: $port"
+  exit 1
+fi
+
+pids=("${(@f)$(lsof -ti :"$port" 2>/dev/null)}")
+
+if (( ${#pids[@]} == 0 )); then
+  print "No process is using port $port."
+  exit 0
+fi
+
+case "$action" in
+  info)
+    lsof -i :"$port"
+    ;;
+
+  stop)
+    print "Sending SIGTERM to process(es): ${pids[*]}"
+    kill -15 "${pids[@]}"
+    ;;
+
+  kill)
+    print "Sending SIGKILL to process(es): ${pids[*]}"
+    kill -9 "${pids[@]}"
+    ;;
+
+  *)
+    print -u2 "Error: Unknown action: $action"
+    print -u2 'Usage: portinfo <port> [stop|kill]'
+    exit 1
+    ;;
+esac

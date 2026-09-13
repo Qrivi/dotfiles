@@ -1,0 +1,30 @@
+#!/usr/bin/env zsh
+
+set -e
+
+if [[ "$OSTYPE" != darwin* ]]; then
+  print -u2 "Error: appversion only supports macOS."
+  exit 1
+fi
+
+if [[ -z "$1" ]]; then
+  print -u2 'Usage: appversion <application name>'
+  exit 1
+fi
+
+app_name="$*"
+app_path="/Applications/$app_name.app"
+
+if [[ ! -d "$app_path" ]]; then
+  print -u2 "Error: Application not found: $app_path"
+  exit 1
+fi
+
+version="$(mdls -raw -name kMDItemVersion "$app_path")"
+
+if [[ -z "$version" || "$version" == "(null)" ]]; then
+  print -u2 "Error: Could not determine version for $app_name."
+  exit 1
+fi
+
+print "$version"

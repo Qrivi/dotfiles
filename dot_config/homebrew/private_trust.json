@@ -1,0 +1,22 @@
+{
+  "trustedtaps": [
+    "qrivi/tap"
+  ],
+  "trustedcasks": [
+    "codeforreal1/tap/compresso",
+    "flewgg/tap/unfold",
+    "jithin-sabu/tap/purge",
+    "nahive/spotify-notify/spotify-notify",
+    "pakerwreah/calendr/calendr",
+    "qrivi/tap/codexmeter",
+    "typewhisper/tap/typewhisper"
+  ],
+  "trustedformulae": [
+    "anomalyco/tap/opencode",
+    "bjarneo/cliamp/cliamp",
+    "nikolaeu/numi/numi-cli",
+    "oven-sh/bun/bun",
+    "qrivi/tap/audioctl",
+    "sdkman/tap/sdkman-cli"
+  ]
+}

@@ -1,0 +1,22 @@
+{{- $profilePrompt := "Select machine profile (press 1 or 2)" -}}
+{{- $profileChoices := list "1: macos-base" "2: macos-work" -}}
+{{- $profiles := dict
+    "1: macos-base" "macos-base"
+    "2: macos-work" "macos-work"
+    "macos-base" "macos-base"
+    "macos-work" "macos-work"
+-}}
+{{- $profileChoice := promptChoiceOnce . "profile" $profilePrompt $profileChoices -}}
+{{- if not (hasKey $profiles $profileChoice) -}}
+{{- fail (printf "invalid machine profile %q" $profileChoice) -}}
+{{- end -}}
+{{- $profile := index $profiles $profileChoice -}}
+
+encryption = "age"
+
+[age]
+identity = "~/.config/chezmoi/key.txt"
+recipient = "age1zqtq84zmx9jz7q94rme8h2688jferynj4fkmfdzz794cnfw8kqlqf945r7"
+
+[data]
+profile = {{ $profile | quote }}

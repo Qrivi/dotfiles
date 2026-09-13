@@ -1,0 +1,82 @@
+#!/usr/bin/env zsh
+{{ if eq .chezmoi.os "darwin" }}
+
+set -euo pipefail
+source {{ joinPath .chezmoi.sourceDir "assets/scripts/helpers.zsh" | quote }}
+
+step "Set macOS app defaults"
+
+# Finder
+defaults write com.apple.finder AppleShowAllFiles -bool true # Show hidden files.
+defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false # Do not warn when changing a filename extension.
+defaults write com.apple.finder FXRemoveOldTrashItems -bool true # Remove Trash items after 30 days.
+defaults write com.apple.finder FXDefaultSearchScope -string SCcf # Search the current folder by default.
+defaults write com.apple.finder FXPreferredViewStyle -string clmv # Use column view by default.
+defaults write com.apple.finder FXPreferredSearchViewStyle -string clmv # Show search results in column view.
+defaults write com.apple.finder NewWindowTarget -string PfHm # Open the home folder in new Finder windows.
+defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true # Show external drives on the desktop.
+defaults write com.apple.finder ShowHardDrivesOnDesktop -bool false # Hide internal drives from the desktop.
+defaults write com.apple.finder ShowMountedServersOnDesktop -bool true # Show mounted servers on the desktop.
+defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true # Show removable media on the desktop.
+defaults write com.apple.finder ShowPathbar -bool true # Show the path bar.
+defaults write com.apple.finder ShowPreviewPane -bool false # Keep the preview pane hidden by default (unless in column view).
+defaults write com.apple.finder ShowSidebar -bool true # Show the sidebar.
+defaults write com.apple.finder ShowStatusBar -bool true # Show the status bar.
+defaults write com.apple.finder WarnOnEmptyTrash -bool false # Do not ask for confirmation when emptying Trash.
+defaults write com.apple.finder _FXEnableColumnAutoSizing -bool true # Automatically size Finder columns to their contents.
+defaults write com.apple.finder _FXSortFoldersFirst -bool true # Sort folders before files.
+defaults write com.apple.finder _FXSortFoldersFirstOnDesktop -bool true # Sort folders before files on the desktop.
+
+# Window Manager and Stage Manager
+defaults write com.apple.WindowManager AppWindowGroupingBehavior -int 1 # Group windows using the current app-based mode.
+defaults write com.apple.WindowManager AutoHide -bool false # Keep Stage Manager's recent-apps strip visible instead of auto-hiding it.
+defaults write com.apple.WindowManager EnableTiledWindowMargins -bool false # Remove margins between tiled windows.
+defaults write com.apple.WindowManager EnableTilingByEdgeDrag -bool true # Tile windows by dragging them to a screen edge.
+defaults write com.apple.WindowManager EnableTilingOptionAccelerator -bool true # Enable the Option-key shortcut while dragging to tile.
+defaults write com.apple.WindowManager EnableTopTilingByEdgeDrag -bool true # Tile a window by dragging it to the top edge.
+defaults write com.apple.WindowManager StageManagerHideWidgets -bool false # Show desktop widgets while Stage Manager is active.
+defaults write com.apple.WindowManager StandardHideWidgets -bool false # Show desktop widgets outside Stage Manager.
+
+# Dock, Spaces, and hot corners
+defaults write com.apple.dock autohide -bool false # Keep the Dock visible.
+defaults write com.apple.dock autohide-delay -float 0 # Remove the delay before showing an auto-hidden Dock.
+defaults write com.apple.dock autohide-time-modifier -float 0.45 # Animate Dock hiding and showing in 0.45 seconds.
+defaults write com.apple.dock expose-group-apps -bool true # Group Mission Control windows by application.
+defaults write com.apple.dock mineffect -string scale # Use the Scale effect when minimizing windows.
+defaults write com.apple.dock mru-spaces -bool false # Do not rearrange Spaces by recent use.
+defaults write com.apple.dock tilesize -int 48 # Set Dock icon size to 48 pixels.
+defaults write com.apple.dock wvous-br-corner -int 5 # Start the screen saver from the bottom-right hot corner.
+defaults write com.apple.dock wvous-br-modifier -int 0 # Do not require a modifier key for that hot corner.
+
+# Screen saver and Lock Screen
+defaults write com.apple.screensaver askForPassword -bool true # Require a password after the screen saver starts or the display turns off.
+defaults write com.apple.screensaver askForPasswordDelay -int 5 # Allow a five-second grace period before requiring the password. # TODO was set to 5 min after last install (not sure if bugged or not applied and 5 is default)
+
+# Spotlight menu-bar visibility is a per-host preference.
+defaults -currentHost write com.apple.Spotlight MenuItemHidden -bool true # Hide Spotlight from the menu bar.
+
+# Menu bar clock
+defaults write com.apple.menuextra.clock IsAnalog -bool false # Show a digital clock.
+defaults write com.apple.menuextra.clock ShowDate -bool true # Show the date in the menu bar.
+defaults write com.apple.menuextra.clock ShowDayOfWeek -bool true # Show the day of the week in the menu bar.
+
+# Screenshots
+defaults write com.apple.screencapture location -string "$HOME/Downloads" # Save screenshots in Downloads.
+
+# Safari
+defaults write com.apple.Safari IncludeDevelopMenu -bool true # Show Safari's Develop menu.
+defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true # Enable Safari developer extras.
+defaults write com.apple.Safari WebKitPreferences.developerExtrasEnabled -bool true # Enable Web Inspector features in WebKit pages.
+
+# Speak Selection
+defaults write com.apple.Accessibility SpeakThisEnabled -bool true # Enable Speak Selection accessibility.
+defaults write com.apple.universalaccess speakSelectionEnabled -bool true # Keep Speak Selection enabled in universal-access preferences.
+
+# Reload applications that cache these preferences.
+killall Finder >/dev/null 2>&1 || true
+killall Dock >/dev/null 2>&1 || true
+killall SystemUIServer >/dev/null 2>&1 || true
+killall ControlCenter >/dev/null 2>&1 || true
+
+success "Done"
+{{ end }}

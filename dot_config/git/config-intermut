@@ -1,0 +1,6 @@
+[user]
+    name = Kristof Dewilde
+    email = kristof.dewilde@intermut.be
+    signingkey = 5DDFEEF951CB1290
+[core]
+    autocrlf = false

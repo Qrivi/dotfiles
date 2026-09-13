@@ -1,0 +1,85 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+if (( $# < 1 || $# > 2 )); then
+  echo "Usage: $(basename "$0") [first-commit] <hours>"
+  echo "Examples:"
+  echo "  $(basename "$0") 3"
+  echo "  $(basename "$0") HEAD~5 3"
+  exit 1
+fi
+
+if (( $# == 1 )); then
+  first_commit="HEAD"
+  hours="$1"
+else
+  first_commit="$1"
+  hours="$2"
+fi
+
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "Error: not inside a Git repository."
+  exit 1
+fi
+
+if ! [[ "$hours" =~ '^[1-9][0-9]*$' ]]; then
+  echo "Error: hours must be a positive integer."
+  exit 1
+fi
+
+first_commit="$(git rev-parse --verify "${first_commit}^{commit}")"
+
+if ! git merge-base --is-ancestor "$first_commit" HEAD; then
+  echo "Error: $first_commit is not an ancestor of HEAD."
+  exit 1
+fi
+
+seconds=$(( hours * 3600 ))
+
+echo
+echo "This will rewrite history from:"
+git log -1 --format='  %h  %ad  %s' --date=iso "$first_commit"
+
+echo "through:"
+git log -1 --format='  %h  %ad  %s' --date=iso HEAD
+
+echo
+echo "All author and committer dates will be shifted ${hours} hour(s) earlier."
+echo
+
+read "answer?Continue? [y/N] "
+[[ "$answer" == [yY] ]] || exit 0
+
+root_commit="$(git rev-list --max-parents=0 HEAD | tail -1)"
+
+export SHIFT_SECONDS="$seconds"
+
+env_filter='
+author_timestamp=$(git show -s --format=%at "$GIT_COMMIT")
+author_timezone=$(git show -s --format=%ai "$GIT_COMMIT" | awk "{print \$3}")
+
+committer_timestamp=$(git show -s --format=%ct "$GIT_COMMIT")
+committer_timezone=$(git show -s --format=%ci "$GIT_COMMIT" | awk "{print \$3}")
+
+export GIT_AUTHOR_DATE="$((author_timestamp - SHIFT_SECONDS)) $author_timezone"
+export GIT_COMMITTER_DATE="$((committer_timestamp - SHIFT_SECONDS)) $committer_timezone"
+'
+
+if [[ "$first_commit" == "$root_commit" ]]; then
+  range="HEAD"
+else
+  parent="$(git rev-parse "${first_commit}^")"
+  range="${parent}..HEAD"
+fi
+
+FILTER_BRANCH_SQUELCH_WARNING=1 \
+git filter-branch \
+  --force \
+  --env-filter "$env_filter" \
+  -- "$range"
+
+echo
+echo "Done."
+echo
+git log --format='%h  %ad  %cd  %s' --date=iso "$first_commit"..HEAD 2>/dev/null || true

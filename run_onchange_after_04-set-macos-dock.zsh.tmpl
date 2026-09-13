@@ -1,0 +1,53 @@
+#!/usr/bin/env zsh
+{{ if eq .chezmoi.os "darwin" }}
+
+set -euo pipefail
+source {{ joinPath .chezmoi.sourceDir "assets/scripts/helpers.zsh" | quote }}
+
+step "Configure Dock"
+
+typeset -a dock_apps=(
+  "/Applications/Ghostty.app"
+  "/Applications/Arc.app"
+  "/System/Applications/Mail.app"
+  "/System/Applications/Calendar.app"
+  "/System/Applications/Reminders.app"
+  "/System/Applications/Notes.app"
+  "/System/Applications/Stickies.app"
+  "/Applications/Notion.app"
+  "/Applications/Beeper Desktop.app"
+  "/Applications/Discord.app"
+  "/Applications/Microsoft Teams.app"
+  "/Applications/Spotify.app"
+  "/System/Applications/Podcasts.app"
+  "/Applications/Xcode.app"
+  "/Applications/IntelliJ IDEA.app"
+  "/Applications/Visual Studio Code.app"
+  "/Applications/ChatGPT.app"
+  "/Applications/Fork.app"
+  "/Applications/OrbStack.app"
+  "/Applications/NetNewsWire.app"
+)
+
+# Start from a predictable aka empty Dock
+dockutil --remove all --no-restart
+
+# Add apps to Dock
+integer position=1
+for app in "${dock_apps[@]}"; do
+  if [[ -d "$app" ]]; then
+    dockutil --add "$app" --position "$position" --no-restart
+    (( position++ ))
+  else
+    warning "Cannot add ${app:t:r} to the Dock because it is not installed at $app"
+  fi
+done
+
+# Add folders to Dock
+dockutil --add "/Applications" --section others --sort name --no-restart
+dockutil --add "$HOME/Downloads" --section others --view fan --no-restart
+
+# Configure Dock minimize effect
+defaults write com.apple.dock "mineffect" -string "scale"
+killall Dock
+{{ end }}

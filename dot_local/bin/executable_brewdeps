@@ -1,0 +1,18 @@
+#!/usr/bin/env zsh
+
+set -e
+
+if ! command -v brew >/dev/null 2>&1; then
+  print -u2 "Error: Homebrew is not installed."
+  exit 1
+fi
+
+brew list --formula | while IFS= read -r pkg; do
+  printf '📦 %s\n' "$pkg"
+
+  dependents="$(brew uses --installed "$pkg" | awk '{print " ├ " $0}')"
+
+  if [[ -n "$dependents" ]]; then
+    printf '%s\n' "$dependents"
+  fi
+done

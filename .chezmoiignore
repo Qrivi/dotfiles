@@ -1,0 +1,20 @@
+key.txt.age
+
+# Source-only files consumed by bootstrap and chezmoi scripts.
+assets
+assets/**
+
+# GnuPG runtime state and machine-local databases. These patterns also guard
+# against accidentally tracking them after a future recursive `chezmoi add`.
+.gnupg/S.gpg-agent*
+.gnupg/crls.d/
+.gnupg/private-keys-v1.d/
+.gnupg/pubring.kbx*
+.gnupg/tofu.db
+.gnupg/trustdb.gpg
+.gnupg/*.bak.*
+
+.DS_Store
+
+README.md
+.gitignore

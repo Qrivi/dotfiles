@@ -1,0 +1,66 @@
+#!/usr/bin/env zsh
+{{ if eq .chezmoi.os "darwin" }}
+
+set -euo pipefail
+source {{ joinPath .chezmoi.sourceDir "assets/scripts/helpers.zsh" | quote }}
+
+step "Set macOS global defaults"
+
+# Language, region, date, and time
+defaults write NSGlobalDomain AppleLanguages -array en-US # Use English as the system language.
+defaults write NSGlobalDomain AppleLocale -string 'en_US@rg=bezzzz' # Use English formatting with Belgium as the region.
+defaults write NSGlobalDomain AppleICUForce24HourTime -bool true # Display time using the 24-hour clock.
+defaults write NSGlobalDomain AppleICUDateFormatStrings -dict-add 1 'y-MM-dd' # Use an ISO-style short date.
+
+# Appearance and window behavior
+defaults write NSGlobalDomain AppleAccentColor -int 1 # Use orange as the system accent color.
+defaults write NSGlobalDomain AppleHighlightColor -string '1.000000 0.874510 0.701961 Orange' # Use orange when selecting text.
+defaults write NSGlobalDomain AppleInterfaceStyle -string Dark # Use Dark appearance.
+defaults write NSGlobalDomain AppleActionOnDoubleClick -string Minimize # Minimize a window when its title bar is double-clicked.
+defaults write NSGlobalDomain AppleEnableMouseSwipeNavigateWithScrolls -bool true # Enable swipe navigation with a mouse or trackpad.
+defaults write NSGlobalDomain AppleKeyboardUIMode -int 2 # Allow Tab to move focus through additional interface controls.
+defaults write NSGlobalDomain AppleMenuBarVisibleInFullscreen -bool false # Hide the menu bar in full-screen apps.
+defaults write NSGlobalDomain _HIHideMenuBar -bool false # Keep the menu bar visible outside full-screen apps.
+defaults write NSGlobalDomain AppleScrollerPagingBehavior -bool true # Jump to the clicked position in a scroll bar.
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true # Always show filename extensions.
+defaults write NSGlobalDomain AppleShowScrollBars -string WhenScrolling # Show scroll bars while scrolling.
+defaults write NSGlobalDomain AppleWindowTabbingMode -string fullscreen # Automatically use document tabs only in full screen.
+defaults write NSGlobalDomain NSCloseAlwaysConfirmsChanges -bool true # Ask before discarding unsaved document changes.
+defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool true # Restore an app's windows when the app is reopened.
+defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 2 # Use medium size for table and sidebar rows.
+
+# Typing, dragging, sound, and spring-loaded folders
+defaults write NSGlobalDomain KeyRepeat -int 2 # Repeat held keys quickly.
+defaults write NSGlobalDomain InitialKeyRepeat -int 15 # Start repeating a held key after a short delay.
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool true # Capitalize words automatically.
+defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool true # Insert a period after pressing Space twice.
+defaults write NSGlobalDomain NSWindowShouldDragOnGesture -bool true # Allow Ctrl+Cmd-dragging from anywhere in a window.
+defaults write NSGlobalDomain NSConvolutionOverride1 -float 9 # Use the older, tighter window corner radius.
+defaults write NSGlobalDomain com.apple.mouse.scaling -float 3 # Set mouse tracking speed to the Settings UI maximum.
+defaults write NSGlobalDomain com.apple.trackpad.scaling -float 3 # Set trackpad tracking speed to the Settings UI maximum.
+defaults write NSGlobalDomain com.apple.trackpad.forceClick -bool true # Enable Force Click and haptic feedback.
+defaults write NSGlobalDomain com.apple.sound.beep.feedback -bool true # Play feedback when changing the volume.
+defaults write NSGlobalDomain com.apple.sound.beep.sound -string /System/Library/Sounds/Tink.aiff # Use "Boop" as the system alert sound.
+defaults write NSGlobalDomain com.apple.springing.enabled -bool true # Open spring-loaded folders while dragging over them.
+defaults write NSGlobalDomain com.apple.springing.delay -float 0.2 # Wait 200 milliseconds before opening a spring-loaded folder.
+
+# Use "ABC - Extended" as the only keyboard layout while keeping the character
+# viewer, accent picker, and macOS dictation. A logout may be needed to see it.
+defaults write com.apple.HIToolbox AppleEnabledInputSources -array \
+  '<dict><key>Bundle ID</key><string>com.apple.CharacterPaletteIM</string><key>InputSourceKind</key><string>Non Keyboard Input Method</string></dict>' \
+  '<dict><key>Bundle ID</key><string>com.apple.PressAndHold</string><key>InputSourceKind</key><string>Non Keyboard Input Method</string></dict>' \
+  '<dict><key>Bundle ID</key><string>com.apple.inputmethod.ironwood</string><key>InputSourceKind</key><string>Non Keyboard Input Method</string></dict>' \
+  '<dict><key>InputSourceKind</key><string>Keyboard Layout</string><key>KeyboardLayout ID</key><integer>-2</integer><key>KeyboardLayout Name</key><string>US Extended</string></dict>'
+defaults write com.apple.HIToolbox AppleSelectedInputSources -array \
+  '<dict><key>Bundle ID</key><string>com.apple.PressAndHold</string><key>InputSourceKind</key><string>Non Keyboard Input Method</string></dict>' \
+  '<dict><key>InputSourceKind</key><string>Keyboard Layout</string><key>KeyboardLayout ID</key><integer>-2</integer><key>KeyboardLayout Name</key><string>US Extended</string></dict>'
+defaults write com.apple.HIToolbox AppleInputSourceHistory -array \
+  '<dict><key>InputSourceKind</key><string>Keyboard Layout</string><key>KeyboardLayout ID</key><integer>-2</integer><key>KeyboardLayout Name</key><string>US Extended</string></dict>'
+defaults write com.apple.HIToolbox AppleCurrentKeyboardLayoutInputSourceID -string 'com.apple.keylayout.USExtended'
+
+# Refresh menu-bar processes that cache global preferences.
+killall SystemUIServer >/dev/null 2>&1 || true
+killall ControlCenter >/dev/null 2>&1 || true
+
+success "Done"
+{{ end }}

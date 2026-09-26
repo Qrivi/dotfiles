@@ -25,5 +25,9 @@ sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticCheck
 sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticDownload -bool false # Do not download macOS updates automatically.
 sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate CriticalUpdateInstall -bool true # Install critical updates and security responses automatically.
 
+# Inline emoji search
+sudo mkdir -p /Library/Preferences/FeatureFlags/Domain
+sudo defaults write /Library/Preferences/FeatureFlags/Domain/Stickers InlineEmojiSearch -dict Enabled -bool true # Inline emoji search by typing a colon
+
 success "Done"
 {{ end }}

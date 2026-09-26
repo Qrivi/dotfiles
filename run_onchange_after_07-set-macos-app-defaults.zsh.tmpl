@@ -7,6 +7,7 @@ source {{ joinPath .chezmoi.sourceDir "assets/scripts/helpers.zsh" | quote }}
 step "Set macOS app defaults"
 
 # Finder
+defaults write com.apple.finder NSUserKeyEquivalents -dict-add Open '@↩' # Open the selected item with Command-Return.
 defaults write com.apple.finder AppleShowAllFiles -bool true # Show hidden files.
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false # Do not warn when changing a filename extension.
 defaults write com.apple.finder FXRemoveOldTrashItems -bool true # Remove Trash items after 30 days.
@@ -26,6 +27,9 @@ defaults write com.apple.finder WarnOnEmptyTrash -bool false # Do not ask for co
 defaults write com.apple.finder _FXEnableColumnAutoSizing -bool true # Automatically size Finder columns to their contents.
 defaults write com.apple.finder _FXSortFoldersFirst -bool true # Sort folders before files.
 defaults write com.apple.finder _FXSortFoldersFirstOnDesktop -bool true # Sort folders before files on the desktop.
+
+# Mail
+defaults write com.apple.mail NSUserKeyEquivalents -dict-add Archive '@d' # Archive the selected message with Command-D.
 
 # Window Manager and Stage Manager
 defaults write com.apple.WindowManager AppWindowGroupingBehavior -int 1 # Group windows using the current app-based mode.

@@ -1,0 +1,4 @@
+#!/usr/bin/env zsh
+
+# Chezmoi will have checked out the repo via HTTPS
+git -C {{ .chezmoi.sourceDir | quote }} remote set-url origin git@github.com:qrivi/dotfiles.git

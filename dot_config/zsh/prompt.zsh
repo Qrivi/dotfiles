@@ -8,6 +8,10 @@ eval "$(zoxide init zsh)"
 
 eval "$(atuin init zsh)"
 
+if ! atuin key >/dev/null 2>&1; then
+  print -P "%F{yellow}⚠ Atuin is not logged in — history is not syncing.%f"
+fi
+
 # --- fuck ---
 
 eval "$(thefuck --alias)"

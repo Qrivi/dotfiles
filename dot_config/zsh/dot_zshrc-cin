@@ -1,0 +1,119 @@
+# ~/.config/zsh/.zshrc-cin
+
+# Open all the be.cin.nom repos in Fork
+cinfork() {
+  emulate -L zsh
+
+  local root="$HOME/Developer/Intermut/be.cin.nom"
+  local repo
+  local -a repos=()
+
+  if ! command -v fork >/dev/null 2>&1; then
+    print -u2 -- "cin-fork: Fork CLI is not installed or is not on PATH."
+    return 1
+  fi
+
+  if [[ ! -d "$root" ]]; then
+    print -u2 -- "cin-fork: Repository folder not found: $root"
+    return 1
+  fi
+
+  # Immediate child repositories, including worktrees with a .git file.
+  for repo in "$root"/*(N/); do
+    [[ -d "$repo/.git" || -f "$repo/.git" ]] && repos+=("$repo")
+  done
+
+  if (( ${#repos} == 0 )); then
+    print -u2 -- "cin-fork: No Git repositories found in $root"
+    return 1
+  fi
+
+  for repo in "${(@o)repos}"; do
+    command fork -C "$repo" open || return
+  done
+}
+
+# Manage CIN VM state
+cinvm() {
+  local RESOURCE_GROUP="virtual-desktops-windows"
+  local VM_NAME="vm-win-8"
+
+  local AUTO_START=false
+
+  # Check Azure CLI
+  if ! command -v az >/dev/null 2>&1; then
+    echo "❌ Azure CLI (az) not found."
+    echo "👉 Install it: https://learn.microsoft.com/cli/azure/install-azure-cli"
+    return 127
+  fi
+
+  # Check login (cleanly)
+  if ! az account show >/dev/null 2>&1; then
+    echo "🔐 Azure CLI is not logged in (or session expired)."
+    echo "👉 Run: az login"
+    return 1
+  fi
+
+  # Parse args
+  for arg in "$@"; do
+    case "$arg" in
+      -s|--start)
+        AUTO_START=true
+        ;;
+      *)
+        echo "Unknown argument: $arg"
+        return 1
+        ;;
+    esac
+  done
+
+  # Get VM power state (suppress noisy stderr)
+  local STATE
+  TMPFILE=$(mktemp)
+  STATE=$(az vm get-instance-view \
+    --resource-group "$RESOURCE_GROUP" \
+    --name "$VM_NAME" \
+    --query "instanceView.statuses[?starts_with(code,'PowerState/')].displayStatus" \
+    -o tsv 2>"$TMPFILE")
+  AZ_ERROR=$(<"$TMPFILE")
+  rm -f "$TMPFILE"
+
+  if [[ -z "$STATE" ]]; then
+    echo "❌ Could not determine VM state."
+    echo "👉 Check VM name, resource group, and active subscription."
+    [[ -n "$AZ_ERROR" ]] && echo "$AZ_ERROR"
+    return 1
+  fi
+
+  echo "🖥  VM: $VM_NAME"
+  echo "📊 Status: $STATE"
+  echo
+
+  if [[ "$STATE" == "VM running" ]]; then
+    echo "No action necessary. VM already running. 😎"
+    return 0
+  fi
+
+  if [[ "$AUTO_START" == true ]]; then
+    echo "Auto-start flag detected. Starting VM…"
+    az vm start \
+      --resource-group "$RESOURCE_GROUP" \
+      --name "$VM_NAME" >/dev/null
+    echo "🚀 VM started"
+    return 0
+  fi
+
+  # Interactive prompt
+  read -r "?Start the VM now? (y/N) " REPLY
+  echo
+
+  if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+    echo "Starting VM…"
+    az vm start \
+      --resource-group "$RESOURCE_GROUP" \
+      --name "$VM_NAME" >/dev/null
+    echo "🚀 VM started"
+  else
+    echo "No action taken. VM remains stopped. 🛑"
+  fi
+}

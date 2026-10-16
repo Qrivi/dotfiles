@@ -1,5 +1,7 @@
 # ~/.config/zsh/aliases.zsh
 
+alias cinsource='source "$ZDOTDIR/.zshrc-cin"'
+
 # --- Navigating ---
 
 alias -- -='cd -'

@@ -1,0 +1,59 @@
+#!/bin/zsh
+
+# Requires Vorssaint's Keep Awake shortcut to be Ctrl+Cmd+Shift+Option+K.
+# Disable "Pause when locked": paused sessions have no sleep assertion.
+
+if (( $# != 1 )) || [[ "$1" != on && "$1" != off ]]; then
+    print -u2 -- "Usage: vorssaintawake on|off"
+    exit 2
+fi
+
+desired_state="$1"
+
+awake_state() {
+    local assertions
+    assertions=$(/usr/bin/pmset -g assertions) || return 1
+    if [[ "$assertions" == *'Vorssaint: keep the Mac awake'* ]]; then
+        print -- on
+    else
+        print -- off
+    fi
+}
+
+current_state=$(awake_state) || {
+    print -u2 -- "Could not read the current sleep assertions."
+    exit 1
+}
+
+if [[ "$current_state" == "$desired_state" ]]; then
+    print -- "Vorssaint Keep Awake is already $desired_state."
+    exit 0
+fi
+
+shortcut_enabled=$(/usr/bin/defaults read com.vorssaint.utils hotkeyEnabled 2>/dev/null)
+if [[ "$shortcut_enabled" != 1 ]]; then
+    print -u2 -- "Vorssaint's Keep Awake keyboard shortcut is disabled. Enable it in Vorssaint's Keep Awake settings, then retry."
+    exit 1
+fi
+
+/usr/bin/osascript <<'APPLESCRIPT' || exit 1
+if not (application id "com.vorssaint.utils" is running) then
+    error "Vorssaint must be running."
+end if
+tell application "System Events"
+    key code 40 using {control down, command down, shift down, option down}
+end tell
+APPLESCRIPT
+
+# Give Vorssaint time to handle the shortcut and update its assertions.
+for attempt in {1..10}; do
+    /bin/sleep 0.2
+    current_state=$(awake_state) || break
+    if [[ "$current_state" == "$desired_state" ]]; then
+        print -- "Vorssaint Keep Awake is now $desired_state."
+        exit 0
+    fi
+done
+
+print -u2 -- "Could not confirm Keep Awake is $desired_state. Check Vorssaint's shortcut, Accessibility permission, and Pause when locked setting."
+exit 1

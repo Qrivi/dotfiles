@@ -10,7 +10,8 @@ encrypted files with age.
 Before starting:
 
 - Sign in to iCloud and the Mac App Store.
-- Give the terminal Full Disk Access in **System Settings → Privacy & Security**.
+- Enable **Sync Desktop & Documents Folders** in **Finder Settings → General**.
+- Give the terminal **Full Disk Access** in **System Settings → Privacy & Security**.
 - Have the age recovery passphrase available.
 
 Run the bootstrap:

@@ -12,6 +12,7 @@ echo "You're about to setup your machine with @Qrivi's config and dotfiles."
 echo
 echo "For the setup to go smoothly:"
 echo "- Make sure you're signed in to iCloud and the Mac App Store."
+echo "- Enable Sync Desktop & Documents Folders in Finder Settings > General."
 echo "- Give this terminal app Full Disk Access in System Settings > Privacy & Security."
 echo "- Keep your chezmoi age-key passphrase nearby. A new Mac asks for it once."
 

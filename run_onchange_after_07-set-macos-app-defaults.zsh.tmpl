@@ -10,6 +10,7 @@ step "Set macOS app defaults"
 defaults write com.apple.finder NSUserKeyEquivalents -dict-add Open '@↩' # Open the selected item with Command-Return.
 defaults write com.apple.finder AppleShowAllFiles -bool true # Show hidden files.
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false # Do not warn when changing a filename extension.
+defaults write com.apple.finder FXEnableRemoveFromICloudDriveWarning -bool false # Do not warn when removing a file from iCloud Drive.
 defaults write com.apple.finder FXRemoveOldTrashItems -bool true # Remove Trash items after 30 days.
 defaults write com.apple.finder FXDefaultSearchScope -string SCcf # Search the current folder by default.
 defaults write com.apple.finder FXPreferredViewStyle -string clmv # Use column view by default.
@@ -21,6 +22,7 @@ defaults write com.apple.finder ShowMountedServersOnDesktop -bool true # Show mo
 defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true # Show removable media on the desktop.
 defaults write com.apple.finder ShowPathbar -bool true # Show the path bar.
 defaults write com.apple.finder ShowPreviewPane -bool false # Keep the preview pane hidden by default (unless in column view).
+defaults write com.apple.finder ShowRecentTags -bool false # Hide Recent Tags from the sidebar.
 defaults write com.apple.finder ShowSidebar -bool true # Show the sidebar.
 defaults write com.apple.finder ShowStatusBar -bool true # Show the status bar.
 defaults write com.apple.finder WarnOnEmptyTrash -bool false # Do not ask for confirmation when emptying Trash.

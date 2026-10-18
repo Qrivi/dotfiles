@@ -94,3 +94,5 @@ else
   chezmoi init --apply https://github.com/qrivi/dotfiles.git
   echo "Chezmoi initialized successfully."
 fi
+
+printf '\nSetup complete. A reboot is recommended so all macOS settings take effect.\n'

@@ -22,6 +22,8 @@ zsh -c "$(curl -fsSL https://raw.githubusercontent.com/qrivi/dotfiles/main/asset
 The bootstrap installs the Xcode command-line tools, Homebrew, age, and
 chezmoi. Chezmoi then asks for a machine profile and applies the repository.
 
+After setup finishes, reboot your Mac so all macOS settings take effect.
+
 Available profiles:
 
 - `macos-base`: shared shell tools and desktop applications.
@@ -112,6 +114,9 @@ Apply source-state changes:
 ```zsh
 chezmoi apply
 ```
+
+A reboot is recommended after applying changes to macOS settings, since some
+preferences are cached by running apps and system processes.
 
 Pull and apply changes from the remote:
 

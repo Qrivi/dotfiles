@@ -59,6 +59,15 @@ defaults write com.apple.screensaver askForPasswordDelay -int 5 # Allow a five-s
 # Spotlight menu-bar visibility is a per-host preference.
 defaults -currentHost write com.apple.Spotlight MenuItemHidden -bool true # Hide Spotlight from the menu bar.
 
+# Control Center menu-bar preferences
+defaults -currentHost write com.apple.controlcenter BatteryShowPercentage -bool true # Show the battery percentage.
+defaults -currentHost write com.apple.controlcenter FocusModes -int 0 # Show Focus when active.
+defaults -currentHost write com.apple.controlcenter Siri -int 8 # Hide Siri from the menu bar.
+defaults -currentHost write com.apple.controlcenter TimeMachine -int 2 # Show Time Machine in the menu bar.
+defaults -currentHost write com.apple.controlcenter VPN -int 2 # Show VPN in the menu bar.
+defaults -currentHost write com.apple.controlcenter Weather -int 8 # Hide Weather from the menu bar.
+defaults -currentHost write com.apple.controlcenter WiFi -int 8 # Hide Wi-Fi from the menu bar.
+
 # Menu bar clock
 defaults write com.apple.menuextra.clock IsAnalog -bool false # Show a digital clock.
 defaults write com.apple.menuextra.clock ShowDate -bool true # Show the date in the menu bar.

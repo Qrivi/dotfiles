@@ -21,7 +21,20 @@ success "Done"
 
 step "Allow apps from anywhere"
 
-sudo spctl --master-disable
+# Recent macOS versions reveal the Anywhere option but require GUI confirmation,
+# returning a nonzero status even though the request succeeded.
+spctl_exit=0
+spctl_output="$(sudo spctl --master-disable 2>&1)" || spctl_exit=$?
+
+if [[ "$spctl_output" == *"Globally disabling the assessment system needs to be confirmed in System Settings"* ]]; then
+  warning "Confirm Allow applications from: Anywhere in System Settings > Privacy & Security > Security."
+  info "Setup will continue; you can confirm this setting afterwards."
+elif (( spctl_exit != 0 )); then
+  print -u2 -r -- "$spctl_output"
+  exit "$spctl_exit"
+else
+  success "Apps from anywhere are allowed"
+fi
 
 step "Enable TouchID for sudo"
 

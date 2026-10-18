@@ -48,6 +48,17 @@ else
   echo "Xcode command line tools installed successfully."
 fi
 
+# A previous setup run may have installed Xcode without accepting its license.
+# Resolve the real binary so a Command Line Tools-only installation is skipped.
+xcode_developer_dir="$(xcode-select -p)"
+xcodebuild_bin="$xcode_developer_dir/usr/bin/xcodebuild"
+if [[ -x "$xcodebuild_bin" ]] && ! "$xcodebuild_bin" -license check </dev/null >/dev/null 2>&1; then
+  printf '\n==> Review and accept the Xcode license to continue setup.\n'
+  sudo "$xcodebuild_bin" -license </dev/tty
+  # Declining the interactive license can still return success; verify acceptance.
+  "$xcodebuild_bin" -license check </dev/null
+fi
+
 # Install Homebrew and load it into the current shell.
 if command -v brew >/dev/null 2>&1; then
   echo "Homebrew is already installed."

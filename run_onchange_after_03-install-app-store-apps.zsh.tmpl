@@ -73,4 +73,21 @@ if (( failures )); then
 fi
 
 success "Mac App Store apps are installed"
+
+# Xcode may now be selected by Apple's git shim. Review its license as root
+# before any later setup step invokes developer tools.
+xcode_developer_dir="$(xcode-select -p)"
+xcodebuild_bin="$xcode_developer_dir/usr/bin/xcodebuild"
+if [[ ! -x "$xcodebuild_bin" ]]; then
+  xcodebuild_bin='/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild'
+fi
+
+if [[ -x "$xcodebuild_bin" ]] && ! "$xcodebuild_bin" -license check </dev/null >/dev/null 2>&1; then
+  step "Review and accept the Xcode license"
+  info "Read the license and type agree when prompted to continue setup."
+  sudo "$xcodebuild_bin" -license </dev/tty
+  # Declining the interactive license can still return success; verify acceptance.
+  "$xcodebuild_bin" -license check </dev/null
+  success "Xcode license accepted"
+fi
 {{ end }}

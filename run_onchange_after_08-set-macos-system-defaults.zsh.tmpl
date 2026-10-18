@@ -16,6 +16,9 @@ sudo pmset -b displaysleep 10
 sudo pmset -c displaysleep 90
 sudo defaults write /Library/Preferences/.GlobalPreferences com.apple.coremedia.optimizeVideoStreamingOnBattery -bool false # Do not reduce streaming-video quality while on battery.
 
+# Keyboard backlight
+sudo defaults write com.apple.CoreBrightness KeyboardBacklight -dict-add KeyboardBacklightIdleDimTime -int 60 # Turn off after one minute of inactivity.
+
 # Login window
 sudo defaults write /Library/Preferences/com.apple.loginwindow GuestEnabled -bool false # Disable the Guest User account.
 sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText -string hello@kristofdewil.de # Show contact information on the Lock Screen.

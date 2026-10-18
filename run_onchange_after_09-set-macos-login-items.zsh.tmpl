@@ -26,16 +26,23 @@ for app in "${login_apps[@]}"; do
     continue
   fi
 
-  osascript - "$app" <<'APPLESCRIPT'
+  login_result="$(osascript - "$app" <<'APPLESCRIPT'
 on run argv
   set appPath to item 1 of argv
   tell application "System Events"
     if not (exists (login items whose path is appPath)) then
       make new login item at end of login items with properties {path:appPath, hidden:false}
+      return "added"
     end if
   end tell
+  return "existing"
 end run
 APPLESCRIPT
+  )"
+
+  if [[ "$login_result" == "added" ]]; then
+    success "Added ${app:t:r} to login items"
+  fi
 done
 
 success "Login items are configured"

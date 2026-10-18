@@ -43,8 +43,8 @@ for app in "${dock_apps[@]}"; do
 done
 
 # Add folders to Dock
-dockutil --add "/Applications" --section others --sort name --no-restart
-dockutil --add "$HOME/Downloads" --section others --view fan --no-restart
+dockutil --add "/Applications" --section others --display stack --sort name --no-restart
+dockutil --add "$HOME/Downloads" --section others --display stack --view fan --no-restart
 
 # Configure Dock minimize effect
 defaults write com.apple.dock "mineffect" -string "scale"

@@ -2,8 +2,8 @@
 
 Personal macOS configuration managed with [chezmoi](https://www.chezmoi.io/).
 It installs command-line tools and applications with Homebrew and the Mac App
-Store, applies macOS defaults, configures the Dock, and restores encrypted files
-with age.
+Store, applies macOS defaults, configures the Dock and login items, and restores
+encrypted files with age.
 
 ## Install a new Mac
 

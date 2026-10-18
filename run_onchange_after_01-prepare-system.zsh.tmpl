@@ -8,6 +8,9 @@ step "Prepare system"
 # Directories my zsh config writes to but does not create if missing
 mkdir -p "$HOME/.cache/zsh" "$HOME/.local/state/zsh" "$HOME/.local/share" "$HOME/.local/bin"
 
+# Directory where I do my work
+mkdir -p "$HOME/Developer"
+
 {{ if eq .chezmoi.os "darwin" }}
 # A sound file with no sound (used in eg BTT where you must specify a sound file for notifications)
 mkdir -p "$HOME/Library/Sounds"

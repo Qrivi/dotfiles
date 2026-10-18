@@ -19,9 +19,6 @@ Run the bootstrap:
 zsh -c "$(curl -fsSL https://raw.githubusercontent.com/qrivi/dotfiles/main/assets/scripts/setup.zsh)"
 ```
 
-The bootstrap installs the Xcode command-line tools, Homebrew, age, and
-chezmoi. Chezmoi then asks for a machine profile and applies the repository.
-
 After setup finishes, reboot your Mac so all macOS settings take effect.
 
 Available profiles:

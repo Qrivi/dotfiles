@@ -1,0 +1,70 @@
+#!/usr/bin/env zsh
+{{ if eq .chezmoi.os "darwin" }}
+
+set -euo pipefail
+source {{ joinPath .chezmoi.sourceDir "assets/scripts/helpers.zsh" | quote }}
+
+step "Set macOS wallpaper and screen saver"
+
+# Prevent System Settings from writing cached wallpaper choices over our changes.
+killall -u "$(id -un)" "System Settings" >/dev/null 2>&1 || true
+for wallpaper_attempt in {1..20}; do
+  if ! pgrep -u "$(id -u)" -x "System Settings" >/dev/null; then
+    break
+  fi
+  sleep 0.25
+done
+if pgrep -u "$(id -u)" -x "System Settings" >/dev/null; then
+  warning "System Settings is still running. Close it and apply again."
+  exit 1
+fi
+
+wallpaper_store="$HOME/Library/Application Support/com.apple.wallpaper/Store"
+mkdir -p "$wallpaper_store"
+
+wallpaper_index="$wallpaper_store/Index.plist"
+wallpaper_workdir="$(mktemp -d "$wallpaper_store/.chezmoi-wallpaper.XXXXXX")"
+trap 'rm -rf "$wallpaper_workdir"' EXIT
+
+# Embed the preset so run_onchange also notices changes to the source asset.
+cat > "$wallpaper_workdir/preset.plist" <<'WALLPAPER_PLIST'
+{{ include "assets/macos/wallpaper.plist" }}
+WALLPAPER_PLIST
+plutil -lint "$wallpaper_workdir/preset.plist" >/dev/null
+
+if [[ -f "$wallpaper_index" ]]; then
+  cp -p "$wallpaper_index" "$wallpaper_workdir/Index.plist"
+else
+  cp "$wallpaper_workdir/preset.plist" "$wallpaper_workdir/Index.plist"
+fi
+
+# Keep unrelated root keys, but apply the same wallpaper on all spaces and
+# displays, including newly created ones. Use fresh timestamps on this Mac.
+for wallpaper_key in AllSpacesAndDisplays Displays Spaces; do
+  wallpaper_value="$(plutil -extract "$wallpaper_key" xml1 -o - "$wallpaper_workdir/preset.plist")"
+  plutil -replace "$wallpaper_key" -xml "$wallpaper_value" "$wallpaper_workdir/Index.plist"
+done
+
+wallpaper_value="$(plutil -extract AllSpacesAndDisplays xml1 -o - "$wallpaper_workdir/preset.plist")"
+plutil -replace SystemDefault -xml "$wallpaper_value" "$wallpaper_workdir/Index.plist"
+
+wallpaper_timestamp="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+for wallpaper_key in AllSpacesAndDisplays SystemDefault; do
+  for wallpaper_date in LastSet LastUse; do
+    plutil -insert "$wallpaper_key.Linked.$wallpaper_date" -date "$wallpaper_timestamp" "$wallpaper_workdir/Index.plist"
+  done
+done
+
+plutil -convert binary1 "$wallpaper_workdir/Index.plist"
+plutil -lint "$wallpaper_workdir/Index.plist" >/dev/null
+chmod 600 "$wallpaper_workdir/Index.plist"
+
+# Preserve the original once, then install atomically from the same filesystem.
+if [[ -f "$wallpaper_index" && ! -e "$wallpaper_index.chezmoi-backup" ]]; then
+  cp -p "$wallpaper_index" "$wallpaper_index.chezmoi-backup"
+fi
+mv -f "$wallpaper_workdir/Index.plist" "$wallpaper_index"
+killall -u "$(id -un)" WallpaperAgent >/dev/null 2>&1 || true
+
+success "Macintosh wallpaper configured"
+{{ end }}

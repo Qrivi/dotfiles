@@ -40,7 +40,13 @@ do
   defaults write "$mouse_domain" MouseVerticalScroll -bool true # Enable vertical scrolling.
 done
 
-# These screen-saver preferences are specific to this Mac.
+# Trackpad gesture settings.
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.threeFingerHorizSwipeGesture -int 0 # Reserve three-finger horizontal swipes for dragging.
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.threeFingerVertSwipeGesture -int 0 # Reserve three-finger vertical swipes for dragging.
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.fourFingerHorizSwipeGesture -int 2 # Switch desktops and full-screen apps with four fingers.
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.fourFingerVertSwipeGesture -int 2 # Use four fingers for Mission Control and App Exposé.
+
+# Screen saver settings.
 defaults -currentHost write com.apple.screensaver idleTime -int 300 # Start the screen saver after five minutes of inactivity.
 defaults -currentHost write com.apple.screensaver showClock -bool true # Show the large clock on the screen saver and Lock Screen.
 

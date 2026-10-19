@@ -56,6 +56,8 @@ defaults write com.apple.dock wvous-br-corner -int 5 # Start the screen saver fr
 defaults write com.apple.dock wvous-br-modifier -int 0 # Do not require a modifier key for that hot corner.
 
 # Screen saver and Lock Screen
+defaults -currentHost write com.apple.screensaver idleTime -int 300 # Start the screen saver after five minutes of inactivity.
+defaults -currentHost write com.apple.screensaver showClock -bool true # Show the large clock on the screen saver and Lock Screen.
 defaults write com.apple.screensaver askForPassword -bool true # Require a password after the screen saver starts or the display turns off.
 defaults write com.apple.screensaver askForPasswordDelay -int 5 # Allow a five-second grace period before requiring the password. # TODO was set to 5 min after last install (not sure if bugged or not applied and 5 is default)
 

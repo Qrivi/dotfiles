@@ -22,6 +22,10 @@ zsh -c "$(curl -fsSL https://raw.githubusercontent.com/qrivi/dotfiles/main/asset
 
 After setup finishes, reboot your Mac so all macOS settings take effect.
 
+In **System Settings → Accessibility → Read & Speak**, download **Ava (Premium)**
+for English (US) and **Claire (Enhanced)** for Dutch (Netherlands). The scripts
+save these voice selections, but the voice downloads remain manual.
+
 Available profiles:
 
 - `macos-base`: shared shell tools and desktop applications.

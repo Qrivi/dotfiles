@@ -86,9 +86,21 @@ defaults write com.apple.Safari IncludeDevelopMenu -bool true # Show Safari's De
 defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true # Enable Safari developer extras.
 defaults write com.apple.Safari WebKitPreferences.developerExtrasEnabled -bool true # Enable Web Inspector features in WebKit pages.
 
-# Speak Selection
+# Accessibility: zoom and pointer
+defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true # Enable scrolling with a modifier key to zoom.
+defaults write com.apple.universalaccess mouseDriverCursorSize -float 1.2 # Make the pointer slightly larger than normal.
+defaults write com.apple.universalaccess cursorFill -dict red -float 1 green -float 0.5763723254000001 blue -float 0 alpha -float 1 # Use an opaque orange pointer fill.
+defaults write com.apple.universalaccess cursorIsCustomized -bool true # Enable the customized pointer appearance.
+
+# Read & Speak
 defaults write com.apple.Accessibility SpeakThisEnabled -bool true # Enable Speak Selection accessibility.
 defaults write com.apple.universalaccess speakSelectionEnabled -bool true # Keep Speak Selection enabled in universal-access preferences.
+# Select Ava (Premium) for English and Claire (Enhanced) for Dutch; download the voices manually in System Settings.
+defaults write com.apple.Accessibility SpokenContentDefaultVoiceSelectionsByLanguage -array \
+  en \
+  '<dict><key>_type</key><string>Speech.VoiceSelection</string><key>_version</key><integer>0</integer><key>boundLanguage</key><string>en</string><key>voiceId</key><string>com.apple.voice.premium.en-US.Ava</string></dict>' \
+  nl \
+  '<dict><key>_type</key><string>Speech.VoiceSelection</string><key>_version</key><integer>0</integer><key>boundLanguage</key><string>nl</string><key>voiceId</key><string>com.apple.voice.enhanced.nl-NL.Claire</string></dict>'
 
 # Reload applications that cache these preferences.
 killall Finder >/dev/null 2>&1 || true

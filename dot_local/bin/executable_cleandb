@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# Reset the public schema of a PostgreSQL development container.
+set -euo pipefail
+
+usage() {
+  printf 'Usage: cleandb <postgres-container> [-U user] [-d database] [-y]\n\n'
+  printf 'Deletes the public schema, including all data and Liquibase history,\n'
+  printf 'then recreates it. Stop applications using the database first.\n'
+  printf '  -U, --username USER      Override the PostgreSQL user\n'
+  printf '  -d, --dbname DATABASE    Override the PostgreSQL database\n'
+  printf '  -y, --yes                Skip confirmation\n'
+  printf 'Defaults: container POSTGRES_USER (or postgres) and POSTGRES_DB\n'
+  printf '(or the container default user). Options may precede the container.\n'
+}
+
+container=''
+user_override=''
+database_override=''
+assume_yes=false
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -h|--help) usage; exit 0 ;;
+    -y|--yes) assume_yes=true; shift ;;
+    -U|--username|-d|--dbname)
+      if [[ $# -lt 2 || -z "$2" || "$2" == -* ]]; then
+        printf 'Error: %s requires a value.\n' "$1" >&2
+        exit 2
+      fi
+      case "$1" in
+        -U|--username) user_override="$2" ;;
+        -d|--dbname) database_override="$2" ;;
+      esac
+      shift 2
+      ;;
+    -*) printf 'Error: unknown option %s.\n' "$1" >&2; usage >&2; exit 2 ;;
+    *)
+      if [[ -n "$container" || -z "$1" ]]; then
+        printf 'Error: provide exactly one container name.\n' >&2
+        exit 2
+      fi
+      container="$1"
+      shift
+      ;;
+  esac
+done
+
+if [[ -z "$container" ]]; then
+  usage >&2
+  exit 2
+fi
+
+if ! command -v docker >/dev/null 2>&1; then
+  printf 'Error: docker is not available on PATH.\n' >&2
+  exit 1
+fi
+
+printf 'Container: %s\n' "$container"
+docker exec -- "$container" sh -eu -c '
+  user=${1:-${POSTGRES_USER:-postgres}}
+  database=${2:-${POSTGRES_DB:-${POSTGRES_USER:-postgres}}}
+  printf "Database:  %s \nUser:      %s\n" "$database" "$user"
+' cleandb "$user_override" "$database_override"
+
+if [[ "$assume_yes" == false ]]; then
+  printf '\nDelete all tables and data in its public schema? [y/N] '
+  answer=''
+  if ! IFS= read -r -n 1 answer; then
+    printf '\nCancelled.\n'
+    exit 1
+  fi
+  printf '\n'
+  case "$answer" in
+    y|Y) ;;
+    *) printf 'Canceled.\n'; exit 1 ;;
+  esac
+fi
+
+docker exec -- "$container" sh -eu -c '
+  user=${1:-${POSTGRES_USER:-postgres}}
+  database=${2:-${POSTGRES_DB:-${POSTGRES_USER:-postgres}}}
+  exec psql --username="$user" --dbname="$database" --no-psqlrc --quiet \
+    --set=ON_ERROR_STOP=1 --single-transaction \
+    --command="DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+' cleandb "$user_override" "$database_override"
+
+printf 'Database cleared.\n'

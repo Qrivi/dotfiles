@@ -8,9 +8,9 @@ Include ~/.orbstack/ssh/config
 # Personal
 # ----------------------------------------- #
 
-Host server.qrivi.dev
-    HostName server.qrivi.dev
-    User qrivi
+Host tandem
+    HostName 159.69.222.46
+    User root
     IdentityFile ~/.ssh/id_ed25519
     IdentitiesOnly yes
 

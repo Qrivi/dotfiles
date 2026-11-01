@@ -13,7 +13,7 @@ window-padding-y = 0
 window-colorspace = "display-p3"
 
 cursor-style = "block"
-shell-integration-features = "no-cursor"
+shell-integration-features = "no-cursor,ssh-env,ssh-terminfo"
 
 confirm-close-surface = false
 quit-after-last-window-closed = true

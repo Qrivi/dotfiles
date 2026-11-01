@@ -14,7 +14,7 @@
     preloadindex = true
 [init]
     defaultBranch = develop
-    templateDir = ~/.config/git/templates
+    # templateDir = ~/.config/git/templates
 [fetch]
     prune = true
     pruneTags = true
@@ -37,6 +37,8 @@
     gpgsign = true
 [gpg]
     program = gpg
+[diff]
+    algorithm = histogram
 [log]
     abbrevCommit = true
     graphColors = blue,yellow,cyan,magenta,green,red

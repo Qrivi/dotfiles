@@ -1,0 +1,29 @@
+
+#!/bin/zsh
+
+if [[ ! "$1" =~ ^[0-9]+$ ]] || (( $1 < 1 || $1 > 65535 )); then
+  echo "Usage: killport <port>"
+  exit 1
+fi
+
+port=$1
+pids=("${(@f)$(lsof -nP -tiTCP:$port -sTCP:LISTEN)}")
+
+if (( ${#pids} == 0 )); then
+  echo "No process listening on port $port."
+  exit 0
+fi
+
+echo "Processes listening on port $port:"
+lsof -nP -iTCP:$port -sTCP:LISTEN
+
+echo
+read -q "REPLY?Kill these processes? [y/N] "
+echo
+
+if [[ "$REPLY" == [yY] ]]; then
+  kill -TERM "${pids[@]}"
+  echo "Sent SIGTERM to PID(s): ${pids[*]}"
+else
+  echo "Cancelled."
+fi

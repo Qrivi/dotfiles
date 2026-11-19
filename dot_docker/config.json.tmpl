@@ -1,0 +1,6 @@
+{
+{{- if eq .chezmoi.os "darwin" }}
+  "credsStore": "osxkeychain",
+{{- end }}
+  "psFormat": "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.CreatedAt}}"
+}

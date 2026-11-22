@@ -41,7 +41,15 @@ zplugin-update() {
   done
 }
 
+# zsh-autosuggestions
 _zplugin_load zsh-users zsh-autosuggestions
+
+# fast-syntax-highlightling
 _zplugin_load zdharma-continuum fast-syntax-highlighting
+
+# zsh-ai
+export ZSH_AI_PROVIDER="gemini"
+export ZSH_AI_GEMINI_MODEL="gemini-3.5-flash-lite"
+_zplugin_load matheusml zsh-ai
 
 [[ -t 0 ]] && _zplugin_maybe_update

@@ -1,4 +1,5 @@
 theme = "light:Material,dark:Material Darker"
+minimum-contrast = 2
 
 font-family = "JetBrainsMono Nerd Font Mono"
 font-thicken = true

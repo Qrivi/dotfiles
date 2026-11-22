@@ -1,0 +1,11 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- $config := fromJson (default "{}" (.chezmoi.stdin | trim)) -}}
+{{- $psFormat := "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.CreatedAt}}" -}}
+
+{{- $_ := set $config "psFormat" $psFormat -}}
+
+{{- if eq .chezmoi.os "darwin" -}}
+  {{- $_ := set $config "credsStore" "osxkeychain" -}}
+{{- end -}}
+
+{{ $config | toPrettyJson }}
